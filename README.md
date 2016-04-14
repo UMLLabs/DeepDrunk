@@ -8,6 +8,8 @@ Deep Drunk is a project spearheaded by UML Labs at the University of Texas at Au
  - Prepare data
  - Write code
  - Make it work
+ - Solve chess
+ - Solve Go
 
 License
 ----
