@@ -3,18 +3,52 @@ from tweepy import OAuthHandler
 import json
 import re
 import csv
+import getopt
+import sys
 
-consumer_key = 'DCvq1X9udDIAIxLaM3Tf7EsWi'
-consumer_secret = 'G31xJMyTp3uHaEALR1NKjMmdpD3hwV2evWiToBGXFY55BZCQrS'
-access_token = '31236647-YWCJlOQmsUOv55vEPP7GnnXvvy1YTS8Y75eumcffU'
-access_secret = 'XV3xiBLxAJUBlK0ucHsOjNaJNid2q71npdQHgK11wm9Jl'
+def main():
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], '', ['handle=', 'api_key_file='])
+    except getopt.GetoptError as error:
+        print error
+        sys.exit(2)
+    handle = None
+    api_key_file = None
 
+    for opt, arg in opts:
+        if opt == '--handle':
+            handle = arg
+        elif opt == '--api_key_file':
+            api_key_file = arg
+        else:
+            print "Option {} is not valid!".format(opt)
 
+    api_file = open(api_key_file)
+
+    lines = api_file.readlines()
+    consumer_key = None
+    consumer_secret = None
+    access_token = None
+    access_secret = None
+
+    for line in lines:
+        split_line = line.split('=')
+
+        if split_line[0].strip() == 'consumer_key':
+            consumer_key = split_line[1].strip()
+        elif split_line[0].strip() == 'consumer_secret':
+            consumer_secret = split_line[1].strip()
+        elif split_line[0].strip() == 'access_token':
+            access_token = split_line[1].strip()
+        elif split_line[0].strip() == 'access_secret':
+            access_secret = split_line[1].strip()
+
+    get_tweets(handle, consumer_key, consumer_secret, access_token, access_secret)
 def process(tweet):
   text = re.sub(r"(?:\@|https?\://)\S+", "", tweet)
   return text
 
-def get_tweets(screen_name):
+def get_tweets(screen_name, consumer_key, consumer_secret, access_token, access_secret):
   #Twitter only allows access to a users most recent 3240 tweets with this method
 
   #authorize twitter, initialize tweepy
@@ -64,7 +98,5 @@ def get_tweets(screen_name):
 
   save_tweets.close()
 
-def main():
-  get_tweets("realDonaldTrump")
-
-main()
+if __name__ == '__main__':
+    main()
